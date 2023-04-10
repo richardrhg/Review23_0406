@@ -14,6 +14,11 @@
     td {
         vertical-align: middle;
     }
+    .group{
+        display: flex;
+        justify-content:space-between;
+        align-items: center;
+    }
 </style>
 
 <body>
@@ -67,12 +72,28 @@
 
     <div class="container">
         <div class="content mt-4">
-            <h1>英文單字</h1>
+            <div class="group">
+                <h1>英文單字</h1>
+                <a href="./index.html" class="btn btn-outline-warning">返回</a>
+            </div>
             <div class="menu">
-                <button type="button" class="btn btn-outline-primary" onclick="read('6A')">6A</button>
-                <button type="button" class="btn btn-outline-primary" onclick="read('6B')">6B</button>
-                <button type="button" class="btn btn-outline-primary" onclick="read('7A')">7A</button>
-                <button type="button" class="btn btn-outline-primary" onclick="location.href='eng_examination_select.html'">自我測驗</button>
+          <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link btn" aria-current="page" id="nav_two" onclick="read(this.id,'6A')">6A</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn" aria-current="page" id="nav_three" onclick="read(this.id,'6B')">6B</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link btn" aria-current="page" id="nav_four" onclick="read(this.id,'7A')">7A</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn" aria-current="page" id="nav_five" onclick="read(this.id,'7B')">7B</a>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-outline-dark" onclick="location.href='./eng_examination_select.html'">自我測驗</button>
+                    </li>
+                </ul>
             </div>
             <table class="table table-striped" style="position: relative;">
                 <thead>
@@ -87,14 +108,46 @@
             </table>
         </div>
     </div>
-
+    <div class="modal fade" id="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" >
+                <span id="modal-title"></span>
+                <span id="modal-title2"></span>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p id="text_eng"></p>
+              <p id="text_chi"></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js"
         integrity="sha256-a2yjHM4jnF9f54xUQakjZGaqYs/V1CYvWpoqZzC2/Bw=" crossorigin="anonymous"></script>
 
     <script src="./english_data.js"></script>
     <script>
-        function read(key_name) {
+        function open_modal(text1,text2,word,text3){
+            $("#modal-title").text(word)
+            $("#modal-title2").text(text3)
+            console.log(JSON.parse(text1))
+            // $("#text_eng").text()
+            $("#text_chi").text(text2)
+            $("#modal").modal("show")
+        }
+        function read(who,key_name) {
+            let nav_btn = document.querySelectorAll(".nav>li>a")
+            nav_btn.forEach(element => {
+                console.log($("#"+element.id))
+                $("#"+element.id).removeClass("active")
+            });
             const tableRows = Object.keys(Data).map((key) => {
                 const row = Data[key];
 
@@ -102,32 +155,21 @@
                 if (row["範圍"] == key_name) {
                     return `
                         <div class="accordion" id="accordionExample">
-                            <tr data-bs-toggle="collapse" data-bs-target="#collapse-${key}"
-                                aria-expanded="false" aria-controls="collapse-${key}">
-
+                            <tr onclick="open_modal('`+JSON.stringify(row['例句'])+`','${row["句子的中文"]}','`+key+`','${row["範圍"]}')">
                                 <td style="width:30%;">${row["範圍"]}</td>
                                 <td style="width:30%;">${key}</td>
                                 <td style="">${row["中文"]}</td>
-
                             </tr>
-
-                            <div id="collapse-${key}" class="accordion-collapse collapse" data-bs-parent="#accordionExample"
-                            style="position: absolute;z-index:1;width:100%; background-color:#fff; border:1px solid #333;">
-                                <div class="accordion-body">
-                                    ${row["例句"]}
-                                </div>
-                                <div class="accordion-body">
-                                    ${row["句子的中文"]}
-                                </div>
-                            </div>
                         </div>
                     `;
                 }
             });
+            $("#"+who).addClass("active")
 
             $("#table-body").html(tableRows.join(""));
         }
-        read("6A")
+        $("#nav_two").click();
+
     </script>
 </body>
 
